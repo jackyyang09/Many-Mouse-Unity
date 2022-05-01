@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/ManyMouseUnityImplementation/Examples/ManyMouseExample.unity
+    path: Assets/ManyMouseUnity/Examples/ManyMouseExample.unity
     guid: a66ab1b72dfecd6468cccea5c64a3820
   m_configObjects: {}

@@ -12,17 +12,17 @@ namespace ManyMouseExample
         [SerializeField] Canvas middleCanvas;
         [SerializeField] GameObject sceneMousePrefab;
 
-        List<ManyMouseCrosshair> crosshairs;
+        List<ExampleCrosshair> crosshairs;
 
-        public List<ManyMouseCrosshair> Crosshairs { get { return crosshairs; } }
+        public List<ExampleCrosshair> Crosshairs { get { return crosshairs; } }
+
+        private void Start()
+        {
+            InitializeCrosshairs();
+        }
 
         private void OnEnable()
         {
-            int numMice = ManyMouseWrapper.MouseCount;
-            crosshairs = new List<ManyMouseCrosshair>();
-
-            InitializeCrosshairs();
-
             ManyMouseWrapper.OnInitialized += InitializeCrosshairs;
         }
 
@@ -58,11 +58,13 @@ namespace ManyMouseExample
 
         private void InitializeCrosshairs()
         {
+            crosshairs = new List<ExampleCrosshair>();
+
             for (int i = 0; i < ManyMouseWrapper.MouseCount; i++)
             {
                 if (crosshairs.Count == i)
                 {
-                    ManyMouseCrosshair newCrosshair = Instantiate(sceneMousePrefab, canvas.transform).GetComponent<ManyMouseCrosshair>();
+                    ExampleCrosshair newCrosshair = Instantiate(sceneMousePrefab, canvas.transform).GetComponent<ExampleCrosshair>();
                     crosshairs.Add(newCrosshair);
                 }
                 crosshairs[i].Initialize(i);

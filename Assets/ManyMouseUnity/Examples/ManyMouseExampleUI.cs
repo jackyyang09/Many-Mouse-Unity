@@ -12,6 +12,7 @@ namespace ManyMouseExample
         [SerializeField] ManyMouseExample exampleScript;
         [SerializeField] Text idField;
         [SerializeField] Text nameField;
+        [SerializeField] Text typeField;
         [SerializeField] Text xField;
         [SerializeField] Text yField;
 
@@ -29,6 +30,7 @@ namespace ManyMouseExample
         {
             idField.text = "ID:" + m.ID.ToString();
             nameField.text = "HID Name: " + m.DeviceName;
+            typeField.text = "Type: " + m.DeviceType;
             var c = exampleScript.Crosshairs[m.ID].transform as RectTransform;
             xField.text = "X Pos: " + c.anchoredPosition.x.ToString();
             yField.text = "Y Pos: " + c.anchoredPosition.y.ToString();

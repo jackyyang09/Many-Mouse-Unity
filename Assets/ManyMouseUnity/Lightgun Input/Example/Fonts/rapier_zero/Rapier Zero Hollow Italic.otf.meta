@@ -1,0 +1,22 @@
+fileFormatVersion: 2
+guid: ed3c54e0da294c0418228f212699e57e
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontNames:
+  - Rapier Zero Hollow
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 30195ba2cae8b5c409d17cfb2fb2513c, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

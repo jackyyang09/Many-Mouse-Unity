@@ -14,6 +14,7 @@ namespace ManyMouseExample
         RectTransform rectTransform { get { return transform as RectTransform; } }
 
         public ManyMouse Mouse { get { return mouse; } }
+        [SerializeField]
         ManyMouse mouse;
 
         /// <summary>

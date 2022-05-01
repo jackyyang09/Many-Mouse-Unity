@@ -12,6 +12,13 @@ namespace ManyMouseUnity
         MANYMOUSE_EVENT_MAX
     }
 
+    public enum ManyMouseDeviceType
+    {
+        UNKNOWN,
+        Mouse,
+        Lightgun
+    }
+
     public struct ManyMouseEvent
     {
         public ManyMouseEventType type;
@@ -27,6 +34,17 @@ namespace ManyMouseUnity
     {
         public int ID { get; private set; }
         public string DeviceName { get; private set; }
+        ManyMouseDeviceType deviceType;
+        public ManyMouseDeviceType DeviceType
+        {
+            get { return deviceType; }
+            private set
+            {
+                if (deviceType == value) return;
+                deviceType = value;
+                OnDeviceTypeChanged?.Invoke(this, deviceType);
+            }
+        }
 
         /// <summary>
         /// The change in mouse position since the last update. May not 100% match up with what the system 
@@ -52,9 +70,9 @@ namespace ManyMouseUnity
         public bool Button5 { get { return Buttons[4]; } }
 
         /// <summary>
-        /// Currently no support for horizontal wheel movements
-        /// this could cancel out without someone knowing if the wheel went up then down between polling.
-        /// But the event should still fire for both.
+        /// Currently no support for horizontal wheel movements. 
+        /// This could cancel out without someone knowing if the wheel went up then down between 
+        /// polling. But the event should still fire for both.
         /// </summary>
         public int ScrollWheel { get; private set; }
 
@@ -63,6 +81,7 @@ namespace ManyMouseUnity
         Vector2 prevPos, prevDelta;
 
         #region Events
+        public System.Action<ManyMouse, ManyMouseDeviceType> OnDeviceTypeChanged;
         /// <summary>
         /// Invoked when any connected mouse is moved.
         /// Passes the mouses's move delta
@@ -136,6 +155,8 @@ namespace ManyMouseUnity
             Buttons = new bool[NUM_MOUSE_BUTTONS];
             prevMouseButtons = new bool[NUM_MOUSE_BUTTONS];
             DeviceName = ManyMouseWrapper.MouseDeviceName(_id);
+
+            DeviceType = ManyMouseDeviceType.UNKNOWN;
         }
 
         internal void PollingReset()
@@ -154,7 +175,7 @@ namespace ManyMouseUnity
         {
             switch (mouseEvent.type)
             {
-                // Sinden Lightgun will use Absolute Motion rather than Relative Motion
+                // Lightguns will use Absolute Motion rather than Relative Motion
                 // For some reason, it returns absolute mouse coordinates from (0, 0) to (65535, 65535)
                 // rather than using the actual screen resolution.
                 // Therefore the value is a normalized float from 0 to 1;
@@ -165,7 +186,7 @@ namespace ManyMouseUnity
                             Position.x = (float)mouseEvent.value / (float)ushort.MaxValue;
                             break;
                         case 1:
-                            Position.y = (float)-mouseEvent.value / (float)ushort.MaxValue;
+                            Position.y = ((float)mouseEvent.value / (float)ushort.MaxValue);
                             break;
                     }
 
@@ -175,6 +196,7 @@ namespace ManyMouseUnity
                         OnAnyMousePositionChanged?.Invoke(this, Position);
                         OnAnyMouseUpdated?.Invoke(this);
                         prevPos = Position;
+                        DeviceType = ManyMouseDeviceType.Lightgun;
                     }
                     break;
                 // For some reason, ManyMouse may provide a whack series of Delta events
@@ -183,14 +205,16 @@ namespace ManyMouseUnity
                 // Seems to differ between projects/Unity versions, no clue why this happens
                 case ManyMouseEventType.MANYMOUSE_EVENT_RELMOTION:
                     Delta.x += mouseEvent.item == 0 ? mouseEvent.value : 0;
-                    Delta.y -= mouseEvent.item == 1 ? mouseEvent.value : 0;
+                    Delta.y += mouseEvent.item == 1 ? mouseEvent.value : 0;
 
                     if (prevDelta != Delta)
                     {
+
                         OnMouseDeltaChanged?.Invoke(Delta);
                         OnAnyMouseDeltaChanged?.Invoke(this, Delta);
                         OnAnyMouseUpdated?.Invoke(this);
                         prevDelta = Delta;
+                        DeviceType = ManyMouseDeviceType.Mouse;
                     }
                     break;
                 case ManyMouseEventType.MANYMOUSE_EVENT_BUTTON:

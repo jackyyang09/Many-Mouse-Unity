@@ -44,8 +44,11 @@ namespace ManyMouseUnity
         public static ManyMouse LastActiveMouse;
         public void UpdateLastActive(ManyMouse m) => LastActiveMouse = m;
 
-        ManyMouse[] mice;
+        public ManyMouse[] mice;
         List<ManyMouse> lostMice;
+
+        public static Action<ManyMouse> OnAddMouse;
+        public static Action<ManyMouse> OnRemoveMouse;
 
         #region External Methods
         [DllImport("ManyMouse")]
@@ -74,7 +77,6 @@ namespace ManyMouseUnity
 
         private void OnDisable()
         {
-            Debug.Log("ShuttingDown");
             ManyMouse_Quit();
 
             ManyMouse.OnAnyMouseUpdated -= UpdateLastActive;
@@ -99,20 +101,18 @@ namespace ManyMouseUnity
                 }
             }
 
-            Debug.Log("ManyMouse Init Code:" + initCode);
             IntPtr mouseDriverNamePtr = ManyMouse_DriverName();
             string mouseDriverName = StringFromNativeUtf8(mouseDriverNamePtr);
-            Debug.Log("ManyMouse Driver Name: " + mouseDriverName);
 
-            int _numMice = initCode;
-
-            mice = new ManyMouse[_numMice];
-            for (int i = 0; i < _numMice; i++)
+            if (mice != null) foreach (var mouse in mice) if (OnRemoveMouse != null) OnRemoveMouse(mouse);
+            mice = new ManyMouse[initCode];
+            for (int i = 0; i < initCode; i++)
             {
                 mice[i] = new ManyMouse(i);
                 //todo: check if we already have a mouse in that id.
                 //if it's not the correct id anymore, we have to check by the mouse's name. this might read very generically!
             }
+            foreach (var mouse in mice) if (OnAddMouse != null) OnAddMouse?.Invoke(mouse);
 
             OnInitialized?.Invoke();
         }
@@ -204,6 +204,7 @@ namespace ManyMouseUnity
         {
             Debug.Log("Mouse " + obj.DeviceName + " disconnected!");
 
+            if (OnRemoveMouse != null) OnRemoveMouse?.Invoke(obj);
             //if (reconnectRoutine != null)
             //{
             //    reconnectRoutine = StartCoroutine(ReconnectRoutine());
