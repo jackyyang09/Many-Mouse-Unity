@@ -1,3 +1,6 @@
+# Disclaimer
+**I have since released a better starting implementation of [multiple mouse devices in Unity](https://github.com/jackyyang09/Multi-Mouse-Unity). As such, I will not be updating this project any longer. This repo will be left up for archival purposes.**
+
 # Overview
 ManyMouseUnity is a Unity implementation of a C# port of [ManyMouse](https://icculus.org/manymouse/) whose purpose is to finally make using multiple mouse input devices in Unity possible.
 
